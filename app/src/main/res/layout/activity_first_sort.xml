@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar_basic" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?actionBarSize"
+        android:layout_above="@+id/rg_container" />
+    <RadioGroup
+        android:id="@+id/rg_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_bar_height"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/first_rg_bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rdb_trend"
+            style="@style/FirstRb"
+            android:drawableTop="@drawable/first_trend_rb_selector"
+            android:text="@string/main_page" />
+
+        <RadioButton
+            android:id="@+id/rdb_chat"
+            style="@style/FirstRb"
+            android:drawableTop="@drawable/first_chat_rb_selector"
+            android:text="@string/chat" />
+
+        <RadioButton
+            android:id="@+id/rdb_circle"
+            style="@style/FirstRb"
+            android:drawableTop="@drawable/first_circle_rb_selector"
+            android:text="@string/circle" />
+
+        <RadioButton
+            android:id="@+id/rdb_me"
+            style="@style/FirstRb"
+            android:drawableTop="@drawable/first_me_rb_selector"
+            android:text="@string/me" />
+    </RadioGroup>
+
+
+
+
+
+</RelativeLayout>

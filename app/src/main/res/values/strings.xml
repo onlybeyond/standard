@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">standard</string>
+    <string name="main_page">主页</string>
+    <string name="chat">聊天</string>
+    <string name="circle">圈子</string>
+    <string name="me">我</string>
+</resources>

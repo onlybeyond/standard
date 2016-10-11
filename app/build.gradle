@@ -1,0 +1,55 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        applicationId "com.only.standard"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+        rootProject.ext.variantRelease = false
+    }
+//    publishNonDefault true
+//    defaultPublishConfig "debug"
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug{
+            versionNameSuffix ' dev'
+
+
+        }
+    }
+
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    debugCompile project(':CorekSdk')
+}
+project.afterEvaluate {
+    tasks.all { task ->
+        if (task.name =~ /check.*Manifest/) {
+            if (task.name =~ /[dD]ebug/) {
+                task.dependsOn(onDebugTypeTriggered)
+            } else {
+                task.dependsOn(onReleaseTypeTriggered)
+            }
+        }
+    }
+}
+
+task onDebugTypeTriggered << {
+    rootProject.ext.variantRelease = false
+}
+
+task onReleaseTypeTriggered << {
+    rootProject.ext.variantRelease = true
+}
+
