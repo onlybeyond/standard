@@ -121,7 +121,6 @@ public class HttpLoggingInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Level level = this.level;
-
         Request request = chain.request();
         if (level == Level.NONE) {
             return chain.proceed(request);
@@ -129,21 +128,17 @@ public class HttpLoggingInterceptor implements Interceptor {
 
         boolean logBody = level == Level.BODY;
         boolean logHeaders = logBody || level == Level.HEADERS;
-
         RequestBody requestBody = request.body();
-
+        Headers headers = request.headers();
+        Log.d(TAG,"---header"+headers.toString());
         boolean hasRequestBody = requestBody != null;
-
         String requestStartMessage = request.method() + ' ' + request.url();
         Log.d(TAG,"---request url"+request.url()+"request body");
-
         if (!logHeaders && hasRequestBody) {
             requestStartMessage += " (" + requestBody.contentLength() + "-byte body)";
         }
         logger.log(requestStartMessage);
-
         if (logHeaders) {
-
             if (!logBody || !hasRequestBody) {
                 logger.log("--> END " + request.method());
             } else if (bodyEncoded(request.headers())) {
@@ -173,6 +168,7 @@ public class HttpLoggingInterceptor implements Interceptor {
 
         return response;
     }
+
 
     private boolean bodyEncoded(Headers headers) {
         String contentEncoding = headers.get("Content-Encoding");

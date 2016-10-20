@@ -17,6 +17,8 @@ public class ApiConfig {
     public static final int  ERROR_CODE_NUM=0;
     public static final String API_CHECK_VERSION="index/checkUpdate";
     public static final String API_FROM="api_from";
+    public static final String API_NOTICE_SEARCH = "/index.php?r=notice/search";
+
 
 
 }

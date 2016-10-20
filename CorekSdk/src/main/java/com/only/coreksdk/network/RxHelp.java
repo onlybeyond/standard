@@ -10,17 +10,20 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.ConnectException;
 import java.util.HashMap;
 
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Callback;
+import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.only.coreksdk.utils.LogUtils.*;
+import static com.only.coreksdk.utils.LogUtils.LOGD;
 
 /**
  * Created by only on 16/6/24.
@@ -68,12 +71,26 @@ public class RxHelp {
                     public void onCompleted() {
 
                     }
-
                     @Override
                     public void onError(Throwable e) {
                         ServerResponseBean serverResponseBean=new ServerResponseBean();
+                        if(mRequestParams!=null){
+                            serverResponseBean.params=mRequestParams;
+                        }
+                        if(!TextUtils.isEmpty(mApiFrom)){
+                            serverResponseBean.apiFrom=mApiFrom;
+                        }
                         serverResponseBean.error=e.getMessage();
-                        LOGD(TAG, "--- network error" + e.getMessage());
+                        if(e instanceof HttpException){
+                            HttpException httpException=(HttpException)e;
+                            serverResponseBean.retCode= httpException.code();
+
+                        }else if(e instanceof ConnectException) {
+                            //网络异常
+                            serverResponseBean.retCode=-500;
+                        }
+                        mIResponse.response(serverResponseBean);
+                        LOGD(TAG, "--- network error" + serverResponseBean.error+"---error code"+serverResponseBean.retCode);
                     }
 
                     @Override

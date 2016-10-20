@@ -23,7 +23,6 @@ public class FragmentContainActivity extends BaseActivity {
     private String mTitle;
     private String fragmentType;
     private TextView tvTitle;
-    private boolean isSave;//是否是用来保存联系人
 
     @Override
     public void initData() {

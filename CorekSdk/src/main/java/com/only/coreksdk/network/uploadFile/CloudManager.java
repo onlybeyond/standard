@@ -1,4 +1,4 @@
-package com.only.coreksdk.network;
+package com.only.coreksdk.network.uploadFile;
 
 import android.content.Context;
 import android.net.Uri;
@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ImageView;
 
+import com.only.coreksdk.utils.LogUtils;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
 import com.qiniu.android.storage.UploadOptions;
@@ -19,10 +20,12 @@ import org.json.JSONException;
 
 import java.util.UUID;
 
+import static com.only.coreksdk.utils.LogUtils.*;
 /**
  * QINIU 相关行为
  */
 public class CloudManager {
+    private static String TAG=makeLogTag(CloudManager.class);
 
     public static final String IMAGE_RESIZE_URL = "?imageView2/0/w/800";
     // 参数
@@ -83,9 +86,10 @@ public class CloudManager {
         return token;
     }
 
-    public void uploadImage(final Uri uri, final UpCompletionHandler upCompletionHandler, final UploadOptions options) {
+    public void uploadImage(String filePath, final UpCompletionHandler upCompletionHandler, final UploadOptions options) {
+        LogUtils.LOGD(TAG,"---file paht"+filePath);
         UploadManager uploadManager = new UploadManager();
-        uploadManager.put(uri == null ? "" : uri.getPath(), genUniqueKey(), genPhotoToken(), upCompletionHandler, options);
+        uploadManager.put(filePath == null ? "" : filePath, genUniqueKey(), genPhotoToken(), upCompletionHandler, options);
     }
 
     String genUniqueKey() {
