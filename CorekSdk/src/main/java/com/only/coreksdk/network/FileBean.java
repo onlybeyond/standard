@@ -3,8 +3,6 @@ package com.only.coreksdk.network;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.File;
-
 /**
  * Created by only on 16/10/19.
  * Email: onlybeyond99@gmail.com
@@ -12,14 +10,16 @@ import java.io.File;
  */
 
 public class FileBean implements Parcelable {
-    public String filePath;//存放位置
-    public String fileUrl;//网络url
-    public String fileName;
+
+    public int failCount=0;//失败的次数
+    public String filePath="";//存放位置
+    public String fileUrl="";//网络url
+    public String fileName="";
     public FileStatus status=FileStatus.DEFAULT;//文件的状态
     public double progress;//上传或者下载进度
     public FileType fileType=FileType.DEFAULT;
-    public String error;
-    public String sign;//文件标识
+    public String error="";
+    public String sign="";//文件标识
     public  FilePossession filePossession=FilePossession.PUBLIC_FILE;//文件是否存在公共目录
 
 
@@ -30,6 +30,7 @@ public class FileBean implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.failCount);
         dest.writeString(this.filePath);
         dest.writeString(this.fileUrl);
         dest.writeString(this.fileName);
@@ -45,6 +46,7 @@ public class FileBean implements Parcelable {
     }
 
     protected FileBean(Parcel in) {
+        this.failCount = in.readInt();
         this.filePath = in.readString();
         this.fileUrl = in.readString();
         this.fileName = in.readString();

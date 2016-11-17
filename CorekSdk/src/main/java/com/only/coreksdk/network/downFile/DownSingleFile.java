@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
+
 import com.only.coreksdk.network.FileBean;
 import com.only.coreksdk.network.FilePossession;
 import com.only.coreksdk.network.FileStatus;
@@ -32,6 +33,7 @@ import okhttp3.Response;
 import static com.only.coreksdk.utils.ConstUtils.KB;
 import static com.only.coreksdk.utils.LogUtils.*;
 
+
 /**
  * Created by only on 16/10/19.
  * Email: onlybeyond99@gmail.com
@@ -40,16 +42,23 @@ import static com.only.coreksdk.utils.LogUtils.*;
 public class DownSingleFile {
 
     private static String TAG = makeLogTag(DownSingleFile.class);
+
+    //basic data
     private FileBean mFileBean;
+    private double mProgress;//下载进度
+
+
+
+
 
     //    private String mFileUrl;
-    private double progress;//下载进度
     private Handler mHandler;
     private DownSingleFileListener mDownSingleFileListener;
     //    private FileStatus mFileStatus = FileStatus.DEFAULT;
-    private int updateProgressSize = 100;//更新进度,默认是100k更新一次
+    private int updateProgressSize = 100;//更新进度,默认是10k更新一次
     //    private String fileName;
     private Context mContext;
+
 
 
     /**
@@ -80,17 +89,17 @@ public class DownSingleFile {
 
     public DownSingleFile(Context context) {
         mContext = context;
-        mFileBean = new FileBean();
         mHandler = new Handler(Looper.getMainLooper());
     }
 
-    public void downFile(final String fileUrl, DownSingleFileListener downSingleFileListener) {
+    public void downFile(final FileBean fileBean, DownSingleFileListener downSingleFileListener) {
 
-        mFileBean.fileUrl = fileUrl;
+        mFileBean = fileBean;
         this.mDownSingleFileListener = downSingleFileListener;
 
 
         if (mFileBean.status == FileStatus.DEFAULT) {
+            mFileBean.status=FileStatus.DOWNING;
             OkHttpClient okHttpClient = OkHttpUtils.getOkHttpClient(mContext);
             Request request = new Request.Builder().url(mFileBean.fileUrl).build();
             Call call = okHttpClient.newCall(request);
@@ -126,19 +135,21 @@ public class DownSingleFile {
                             LOGD(TAG, "---is has sd card" + SDCardUtils.isSDCardEnable());
                             if (TextUtils.isEmpty(mFileBean.fileName)) {
                                 mFileBean.fileName = mFileBean.fileUrl.replaceAll("/", "").replaceAll("http:","");
+                                mFileBean.fileName=mFileBean.fileName.substring(mFileBean.fileName.length()-40,mFileBean.fileName.length());//限制长度,防止文件过长导致文件创建不了。
                             }
+                            //加时间戳防止一样
                             if (mFileBean.fileType == FileType.IMAGE) {
                                 if (mFileBean.filePossession == FilePossession.PRIVATE_FILE) {
-                                    file = new File(PathUtils.getPrivateImagePath(mContext) +File.separator+ mFileBean.fileName);
+                                    file = new File(PathUtils.getPrivateImagePath(mContext) +File.separator+String.valueOf(System.currentTimeMillis()) +mFileBean.fileName);
                                 } else {
-                                    file = new File(PathUtils.getPublicImageFilePath() +File.separator+ mFileBean.fileName);
+                                    file = new File(PathUtils.getPublicImageFilePath() +File.separator+ String.valueOf(System.currentTimeMillis())+mFileBean.fileName);
                                 }
                             } else {
                                 if (mFileBean.filePossession == FilePossession.PRIVATE_FILE) {
-                                    file = new File(PathUtils.getPrivateFilePath(mContext) +File.separator+ mFileBean.fileName);
+                                    file = new File(PathUtils.getPrivateFilePath(mContext) +File.separator+String.valueOf(System.currentTimeMillis())+ mFileBean.fileName);
 
                                 } else {
-                                    file = new File(PathUtils.getPublicFilePath() +File.separator+ mFileBean.fileName);
+                                    file = new File(PathUtils.getPublicFilePath() +File.separator+String.valueOf(System.currentTimeMillis())+ mFileBean.fileName);
 
                                 }
                             }
@@ -147,9 +158,7 @@ public class DownSingleFile {
                     }
                 }
             });
-        } else
-
-        {
+        } else {
             //文件正在下载中
             mFileBean.error = "文件正在下载中";
             mDownSingleFileListener.downSingleFileComplete(mFileBean);
@@ -160,14 +169,25 @@ public class DownSingleFile {
     }
 
     public boolean writeFile(InputStream inputStream, File file, final long contentLength) {
+        LOGD(TAG, "--save file path" + file.getAbsolutePath());
+
         if (file == null) {
             return false;
         }
-        if (!FileUtils.createFileByDeleteOldFile(file)) {
-            return false;
-        }
+
+
+            if(!FileUtils.createOrExistsFile(file))
+            if (!FileUtils.createFileByDeleteOldFile(file)) {
+                LOGE(TAG,"没有读写权限或文件名不和法");
+                if(mDownSingleFileListener!=null){
+                    mFileBean.error="没有读写权限或文件名不和法";
+                    mFileBean.status=FileStatus.DOWN_FAIL;
+                    mDownSingleFileListener.downSingleFileComplete(mFileBean);
+                }
+                return false;
+            }
+
         mFileBean.filePath = file.getAbsolutePath();
-        LOGD(TAG, "---save file path" + file.getAbsolutePath());
         int hasWrite = 0;
         int readLength = 0;
         byte[] bytes = new byte[KB];
@@ -180,7 +200,7 @@ public class DownSingleFile {
                 bufferedOutputStream.write(bytes, 0, readLength);
                 bufferedOutputStream.flush();
                 count++;
-                LOGD(TAG, "---has write" + hasWrite + "---content length" + contentLength + "---count" + count + "---read length" + readLength);
+                LOGD(TAG, "--has write" + hasWrite + "--content length" + contentLength + "--count" + count + "--read length" + readLength+"url"+mFileBean.fileUrl);
                 if (count == updateProgressSize || hasWrite == contentLength) {
                     count = 0;
                     final int writeLength = hasWrite;
@@ -208,7 +228,7 @@ public class DownSingleFile {
                     }
                 }
             });
-            if(mFileBean.fileType==FileType.IMAGE&&mFileBean.filePossession==FilePossession.PUBLIC_FILE){
+            if(mFileBean.fileType== FileType.IMAGE&&mFileBean.filePossession== FilePossession.PUBLIC_FILE){
                 //公共的图片在图库显示
                 Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                 Uri uri = Uri.fromFile(file);

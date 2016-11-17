@@ -4,7 +4,6 @@ package com.only.standard.network;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.only.coreksdk.network.ApiConfig;
 import com.only.coreksdk.network.HttpLoggingInterceptor;
 import com.only.coreksdk.network.OkHttpUtils;
 import com.only.coreksdk.utils.LogUtils;
@@ -61,7 +60,7 @@ public static ApiService getService(Context context){
      */
   private static Retrofit getRetrofit(Context context,String baseUrl){
       if(TextUtils.isEmpty(baseUrl)){
-         baseUrl=ApiConfig.API_HOST;
+         baseUrl=Api.API_HOST;
       }
      OkHttpClient okHttpClient=OkHttpUtils.getOkHttpClient(context);
      Retrofit retrofit=new Retrofit.Builder()

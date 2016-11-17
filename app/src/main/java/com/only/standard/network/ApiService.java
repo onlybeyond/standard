@@ -1,6 +1,5 @@
 package com.only.standard.network;
 
-import com.only.coreksdk.network.ApiConfig;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +27,7 @@ public interface ApiService<T> {
 
 
 
-    @POST(ApiConfig.API_CHECK_VERSION)
+    @POST(Api.API_CHECK_VERSION)
     @FormUrlEncoded
     Observable<ResponseBody>  checkVersion(@FieldMap HashMap<String,String> params);
 

@@ -2,15 +2,14 @@ package com.only.coreksdk.network;
 
 import android.content.Context;
 
-import com.only.coreksdk.Config;
-import com.only.coreksdk.utils.LogUtils;
+
 import com.only.coreksdk.utils.NetworkUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -18,6 +17,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.only.coreksdk.utils.LogUtils.*;
+
 
 /**
  * Created by only on 16/10/19.
@@ -34,29 +34,40 @@ public class OkHttpUtils {
         mOkHttpClient = okHttpClient;
     }
 
-    public static OkHttpClient getOkHttpClient(Context context) {
+    public static void init(Context context, HashMap<String, String> commonRequestParams) {
         if (mOkHttpClient == null) {
-            //最基本的设置
+            BasicParamsInterceptor basicParamsInterceptor = null;
+            if (commonRequestParams != null) {
+                basicParamsInterceptor = new BasicParamsInterceptor.Builder()
+                        .addParamsMap(commonRequestParams).build();
+            }
             HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
                 @Override
                 public void log(String message) {
                     String name = Thread.currentThread().getName();
 
-                    LogUtils.LOGD(TAG, "---thread name" + name);
+                    LOGD(TAG, "---thread name" + name);
                 }
             });
             File httpCacheFile = new File(context.getExternalCacheDir() + File.separator + "xiaoluCache");
             LOGD(TAG, "---http cache file path" + httpCacheFile.getAbsolutePath());
-            Cache cache = new Cache(httpCacheFile, Config.HTTP_CACHE_SIZE);
-            mOkHttpClient = new OkHttpClient.Builder()
-                    .readTimeout(10000L, TimeUnit.MILLISECONDS)
-                    .connectTimeout(10000L, TimeUnit.MILLISECONDS)
-                    .addInterceptor(interceptor)
-                    .addInterceptor(getNetWorkInterceptor(context))
-                    .addInterceptor(getInterceptor(context))
-                    .cache(cache)
-                    .build();
+//            Cache cache = new Cache(httpCacheFile, Config.HTTP_CACHE_SIZE);
+            if (basicParamsInterceptor == null) {
+                basicParamsInterceptor = new BasicParamsInterceptor.Builder().build();
+            }
+                mOkHttpClient = new OkHttpClient.Builder()
+                        .readTimeout(10000L, TimeUnit.MILLISECONDS)
+                        .connectTimeout(10000L, TimeUnit.MILLISECONDS)
+                        .addInterceptor(basicParamsInterceptor)
+                        .addInterceptor(interceptor)
+                        .build();
+        }
+    }
 
+    public static OkHttpClient getOkHttpClient(Context context) {
+        if (mOkHttpClient == null) {
+            //最基本的设置
+            init(context, null);
         }
         return mOkHttpClient;
     }

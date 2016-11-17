@@ -4,4 +4,6 @@
     <string name="chat">聊天</string>
     <string name="circle">圈子</string>
     <string name="me">我</string>
+
+    <string name="network_bed">网络好像发生异常了诶!</string>
 </resources>

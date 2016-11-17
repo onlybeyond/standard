@@ -2,28 +2,25 @@ package com.only.coreksdk.network;
 
 
 import android.text.TextUtils;
-import android.util.Log;
 
+import com.google.gson.JsonParser;
 import com.only.coreksdk.modle.ServerResponseBean;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.net.ConnectException;
 import java.util.HashMap;
 
-import okhttp3.Response;
 import okhttp3.ResponseBody;
-import retrofit2.Callback;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.android.schedulers.AndroidSchedulers;
 
-import static com.only.coreksdk.utils.LogUtils.*;
+
 import static com.only.coreksdk.utils.LogUtils.LOGD;
+import static com.only.coreksdk.utils.LogUtils.LOGE;
+
 
 /**
  * Created by only on 16/6/24.
@@ -59,7 +56,7 @@ public class RxHelp {
 
 
     public interface IResponse {
-        void response(ServerResponseBean t);
+        void response(ServerResponseBean serverResponseBean);
     }
 
     public void request() {
@@ -84,19 +81,27 @@ public class RxHelp {
                         if(e instanceof HttpException){
                             HttpException httpException=(HttpException)e;
                             serverResponseBean.retCode= httpException.code();
+                            LOGE(TAG, "--api network http error" + e.getMessage()+"---error code"+serverResponseBean.retCode);
+
 
                         }else if(e instanceof ConnectException) {
                             //网络异常
                             serverResponseBean.retCode=-500;
+                            LOGE(TAG, "--api network http error" + e.getMessage()+"---error code"+serverResponseBean.retCode);
+
                         }
                         mIResponse.response(serverResponseBean);
-                        LOGD(TAG, "--- network error" + serverResponseBean.error+"---error code"+serverResponseBean.retCode);
+                        //这里的error不只是网络请求的error,还有可能是onNext中的错误,例如在onNext中JSON转换错误
+                        LOGE(TAG, "--api  error" + e.getMessage()+"---error code"+serverResponseBean.retCode );
                     }
 
                     @Override
                     public void onNext(ResponseBody responseBody) {
                         ServerResponseBean serverResponseBean=new ServerResponseBean();
                         serverResponseBean.apiName=mApiName;
+
+                        String results="";
+
                         if(mRequestParams!=null){
                             serverResponseBean.params=mRequestParams;
                         }
@@ -104,12 +109,16 @@ public class RxHelp {
                             serverResponseBean.apiFrom=mApiFrom;
                         }
                         try {
-                            serverResponseBean.results=responseBody.string();
+                             results=responseBody.string();
+
+                            JsonParser jsonParser=new JsonParser();
+                            serverResponseBean.results = jsonParser.parse(results).getAsJsonObject();
                         } catch (IOException e) {
                             e.printStackTrace();
                             serverResponseBean.error=e.getMessage();
                         }
-
+                       LOGD(TAG,"--api name"+mApiName+"--result"+results+
+                               "--error"+serverResponseBean.error);
                         mIResponse.response(serverResponseBean);
 
                     }

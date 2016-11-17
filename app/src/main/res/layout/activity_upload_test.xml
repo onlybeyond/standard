@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_request"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textColor="@color/color_white_ffffff"
+        android:background="@color/color_gray_666666"
+        android:text="请求网络" />
+    <TextView
+        android:id="@+id/tv_down"
+        android:layout_below="@id/tv_request"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:text="下载多个文件(顺序下载)" android:textColor="@color/color_white_ffffff"
+        android:background="@color/color_gray_666666"
+
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+    <TextView
+        android:id="@+id/tv_upload"
+        android:layout_below="@id/tv_down"
+        android:layout_marginTop="15dp"
+        android:text="上传文件"
+        android:textColor="@color/color_white_ffffff"
+        android:background="@color/color_gray_666666"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+    <TextView
+        android:id="@+id/tv_down_single"
+        android:layout_below="@id/tv_upload"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:text="下载单个文件" android:textColor="@color/color_white_ffffff"
+        android:background="@color/color_gray_666666"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+    <TextView
+        android:id="@+id/tv_down_more"
+        android:layout_below="@id/tv_down_single"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:text="下载多个个文件(同时)" android:textColor="@color/color_white_ffffff"
+        android:background="@color/color_gray_666666"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_below="@id/tv_down_more"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_below="@id/tv_down_more"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    </ScrollView>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_test"
+        android:layout_below="@id/scrollView"
+        android:layout_marginTop="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+</RelativeLayout>

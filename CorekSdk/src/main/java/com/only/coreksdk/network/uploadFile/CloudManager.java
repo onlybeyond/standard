@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ImageView;
 
-import com.only.coreksdk.utils.LogUtils;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
 import com.qiniu.android.storage.UploadOptions;
@@ -21,6 +20,8 @@ import org.json.JSONException;
 import java.util.UUID;
 
 import static com.only.coreksdk.utils.LogUtils.*;
+
+
 /**
  * QINIU 相关行为
  */
@@ -87,7 +88,7 @@ public class CloudManager {
     }
 
     public void uploadImage(String filePath, final UpCompletionHandler upCompletionHandler, final UploadOptions options) {
-        LogUtils.LOGD(TAG,"---file paht"+filePath);
+        LOGD(TAG,"---file paht"+filePath);
         UploadManager uploadManager = new UploadManager();
         uploadManager.put(filePath == null ? "" : filePath, genUniqueKey(), genPhotoToken(), upCompletionHandler, options);
     }

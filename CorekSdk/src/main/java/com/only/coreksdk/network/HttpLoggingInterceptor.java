@@ -21,7 +21,7 @@ import okio.Buffer;
  * Created by Sunflower on 2016/1/12.
  */
 public class HttpLoggingInterceptor implements Interceptor {
-    private static String TAG=HttpLoggingInterceptor.class.getSimpleName();
+    private static String TAG = HttpLoggingInterceptor.class.getSimpleName();
 
     private static final Charset UTF8 = Charset.forName("UTF-8");
 
@@ -118,6 +118,7 @@ public class HttpLoggingInterceptor implements Interceptor {
         return this;
     }
 
+
     @Override
     public Response intercept(Chain chain) throws IOException {
         Level level = this.level;
@@ -129,11 +130,12 @@ public class HttpLoggingInterceptor implements Interceptor {
         boolean logBody = level == Level.BODY;
         boolean logHeaders = logBody || level == Level.HEADERS;
         RequestBody requestBody = request.body();
+
+
         Headers headers = request.headers();
-        Log.d(TAG,"---header"+headers.toString());
+        Log.d(TAG, "---header" + headers.toString());
         boolean hasRequestBody = requestBody != null;
         String requestStartMessage = request.method() + ' ' + request.url();
-        Log.d(TAG,"---request url"+request.url()+"request body");
         if (!logHeaders && hasRequestBody) {
             requestStartMessage += " (" + requestBody.contentLength() + "-byte body)";
         }
@@ -154,10 +156,7 @@ public class HttpLoggingInterceptor implements Interceptor {
                 if (contentType != null) {
                     contentType.charset(UTF8);
                 }
-
                 logger.log(buffer.readString(charset));
-
-//                logger.log(request.method() + " (" + requestBody.contentLength() + "-byte body)");
             }
         }
 

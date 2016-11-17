@@ -9,7 +9,14 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
+import com.only.coreksdk.modle.ServerResponseBean;
+import com.only.coreksdk.network.RxHelp;
+import com.only.coreksdk.utils.NetworkUtils;
 import com.only.standard.R;
+import com.only.standard.network.Api;
+
+import static com.only.coreksdk.utils.LogUtils.*;
 
 
 /**
@@ -17,10 +24,14 @@ import com.only.standard.R;
  * Email: onlybeyond99@gmail.com
  */
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity  implements RxHelp.IResponse {
+
+    private static String TAG=makeLogTag(BaseActivity.class);
 
     //state
     private boolean isInitTop=true;// is init toolbar
+    private boolean isHandlerNetworkError = true;//是否在基类处理网络异常
+
 
     private boolean isRegisterEvent;
 
@@ -38,6 +49,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void setRegisterEvent(boolean registerEvent) {
         isRegisterEvent = registerEvent;
+    }
+
+    public void setHandlerNetworkError(boolean handlerNetworkError) {
+        isHandlerNetworkError = handlerNetworkError;
     }
 
     @Override
@@ -100,8 +115,21 @@ public abstract class BaseActivity extends AppCompatActivity {
      * network request
      */
      public void requestData(){
+         if (!NetworkUtils.isAvailable(this)) {
+             showToast(getString(R.string.network_bed));
+         }
          requestStartingTime=System.currentTimeMillis();
      };
+
+    /**
+     * 页面中有网络请求时，返回数据在此，该serverResponseBean.result只包括ret=200的情况，
+     * 如果子类需要自己处理其它情况,可以设置isHandlerNetworkError属性
+     * * result为JsonObject类型
+     *
+     * @param serverResponseBean
+     */
+    public abstract void returnData(ServerResponseBean serverResponseBean);
+
 
 
     @Override
@@ -169,6 +197,35 @@ public abstract class BaseActivity extends AppCompatActivity {
             });
         }
     }
+    @Override
+    public void response(ServerResponseBean serverResponseBean) {
+        if (isHandlerNetworkError) {
+            if (TextUtils.isEmpty(serverResponseBean.error)) {
+                JsonObject results = serverResponseBean.results;
+                if (results != null) {
+                    String ret = results.get("ret").getAsString();
+                    if (Api.ARG_RET_NUM.equals(ret)) {
+
+                        returnData(serverResponseBean);
+                        LOGD(TAG, "---");
+                    } else {
+                        String message = results.get(Api.ARG_MESSAGE).getAsString();
+                        if (!TextUtils.isEmpty(message)) {
+                            showToast(message);
+                        }
+                    }
+                } else {
+
+                }
+            } else {
+                showToast(serverResponseBean.error);
+            }
+        } else {
+            returnData(serverResponseBean);
+        }
+
+    }
+
 
 
 

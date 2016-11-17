@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.only.coreksdk.modle.ServerResponseBean;
 import com.only.standard.R;
 
 
@@ -64,6 +65,11 @@ public class FragmentContainActivity extends BaseActivity {
 
         }
 
+
+    }
+
+    @Override
+    public void returnData(ServerResponseBean serverResponseBean) {
 
     }
 
