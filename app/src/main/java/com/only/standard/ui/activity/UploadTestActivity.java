@@ -83,7 +83,10 @@ public class UploadTestActivity extends BaseActivity implements RxHelp.IResponse
 
     @Override
     public void returnData(ServerResponseBean serverResponseBean) {
-        tvContent.setText(serverResponseBean.results.toString());
+        String apiName = serverResponseBean.apiName;
+        if(Api.API_CHECK_VERSION.equals(apiName)) {
+            tvContent.setText(serverResponseBean.results.toString());
+        }
     }
 
     /*@Override
