@@ -3,10 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CorekSdk/CorekSdk.iml" filepath="$PROJECT_DIR$/CorekSdk/CorekSdk.iml" />
-      <module fileurl="file://$PROJECT_DIR$/CorekSdk/CorekSdk.iml" filepath="$PROJECT_DIR$/CorekSdk/CorekSdk.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/standard.iml" filepath="$PROJECT_DIR$/standard.iml" />
       <module fileurl="file://$PROJECT_DIR$/standard.iml" filepath="$PROJECT_DIR$/standard.iml" />
     </modules>
   </component>

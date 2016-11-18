@@ -83,7 +83,7 @@ public class UploadTestActivity extends BaseActivity implements RxHelp.IResponse
 
     @Override
     public void returnData(ServerResponseBean serverResponseBean) {
-
+        tvContent.setText(serverResponseBean.results.toString());
     }
 
     /*@Override
